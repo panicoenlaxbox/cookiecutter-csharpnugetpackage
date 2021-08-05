@@ -109,4 +109,4 @@ To support source link, you can see that we had to add the following to the `.cs
 
 You should see something similar to this in your package, once published.
 
-![](docs\images\Package.png)
+![](docs/images/Package.png)
