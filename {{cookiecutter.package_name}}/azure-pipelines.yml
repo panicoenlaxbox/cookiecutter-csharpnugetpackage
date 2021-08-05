@@ -1,0 +1,66 @@
+variables:
+  - name: BuildConfiguration
+    value: Release
+pool: 
+  vmImage: ubuntu-latest
+stages:
+- stage: CI
+  jobs:
+  - job: Build
+    steps:
+      - pwsh: |
+          if ($env:PACKAGEVERSIONTYPE -eq '' -and $env:BUILD_SOURCEBRANCHNAME -ne 'main') {
+            Write-Host "##vso[task.setvariable variable=PACKAGEVERSIONTYPE]-alpha"
+          }
+      - task: DotNetCoreCLI@2
+        displayName: Restore
+        inputs:
+          command: 'restore'
+          projects: '**/*.csproj'
+          feedsToUse: 'select'
+          vstsFeed: 'YOUR_PROJECT_FEED_ID'
+      - task: DotNetCoreCLI@2
+        displayName: Test
+        inputs:
+          command: 'test'
+          projects: '**/*.Tests.csproj'
+          arguments: '--configuration $(BuildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura'
+      - task: Palmmedia.reportgenerator.reportgenerator-build-release-task.reportgenerator@4
+        displayName: ReportGenerator
+        inputs:
+          reports: '**/*.cobertura.xml'
+          targetdir: 'reportgenerator'
+          reporttypes: Cobertura
+      - task: PublishCodeCoverageResults@1
+        displayName: 'Publish code coverage report'
+        inputs:
+          codeCoverageTool: 'Cobertura'
+          summaryFileLocation: '**/*.cobertura.xml'
+      - task: DotNetCoreCLI@2
+        displayName: Pack
+        inputs:
+          command: 'pack'
+          packagesToPack: 'src/**/*.csproj'
+          packDirectory: '$(Build.ArtifactStagingDirectory)/packages'
+          versioningScheme: 'byEnvVar'
+          versionEnvVar: 'PackageVersion'
+      - publish: $(Build.ArtifactStagingDirectory)/packages
+        artifact: drop
+- stage: Deployment
+  jobs:
+  - deployment:
+    environment:
+      name: YOUR_ENVIRONMENT_NAME
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - download: current
+              artifact: drop
+            - task: DotNetCoreCLI@2
+              displayName: Push
+              inputs:
+                command: 'push'
+                packagesToPush: '$(Pipeline.Workspace)/**/*.nupkg'
+                nuGetFeedType: 'internal'
+                publishVstsFeed: 'YOUR_PROJECT_FEED_ID'
