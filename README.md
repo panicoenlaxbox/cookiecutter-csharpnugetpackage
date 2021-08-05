@@ -80,7 +80,7 @@ The pipeline needs the following variables ir order to run successfully:
 
 > The idea comes from https://www.koskila.net/fun-with-azure-devops-nuget-package-versioning/
 
-`PackageVersionType` should be empty or something like -value (hyphen included), more info at https://docs.microsoft.com/en-us/nuget/create-packages/prerelease-packages
+`PackageVersionType` should be empty or something like -value (hyphen included), more info at https://docs.microsoft.com/en-us/nuget/create-packages/prerelease-packages. Currently, if you don't supply any value and the triggered branch is not `main`, the variable will be set to `-alpha`.
 
 You should allow to modify in each pipeline execution (*Let users override this value when running this pipeline*), the values of `Major`, `Minor` and `PackageVersionType` variables to control SEMVER package version manually when required.
 
