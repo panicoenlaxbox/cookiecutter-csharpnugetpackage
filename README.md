@@ -2,6 +2,8 @@
 
 A [cookiecutter](https://github.com/cookiecutter/cookiecutter) template for a NuGet package published in Azure DevOps.
 
+[Related post](https://www.panicoenlaxbox.com/post/nuget-package-azure-devops/)
+
 # Usage
 
 ```bash
