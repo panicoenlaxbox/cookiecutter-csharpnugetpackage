@@ -25,7 +25,7 @@ A `.editorconfig` file is provided. In addition, a git pre-commit hook is set up
 In order to ensure [Husky.net](https://alirezanet.github.io/Husky.Net/) is installed, you must perform a couple of steps:
 
 ```bash
-dotnet tool restore --ignore-failed-sources
+dotnet tool restore
 git init
 dotnet husky install
 ```
@@ -57,9 +57,19 @@ dotnet reportgenerator -reports:tests\TestResults\Coverage\**\*.cobertura.xml -t
 
 ### Azure DevOps
 
-You must create, in addition to the team project, a feed and an environment with manual approval.
+You must create, in addition to the team project, a feed and an environment with resource of type None and with manual approval.
 
-With everything ready, you can now create the pipeline using the `azure-pipelines.yml` file, where you will have to select the id of the just created feed and write the right environment name.
+![](docs/images/Approvals.png)
+
+With everything ready, you can now create the pipeline using the `azure-pipelines.yml` file, where you will have to select the id of the feed and write the right environment name.
+
+![](docs/images/New%20pipeline.png)
+
+To retrieve the feed id, there is not easy way, but you can get it using the task details, for example:
+
+![](docs/images/feed_id.png)
+
+Now, you can set the right value in `$(feed_id)` variable.
 
 The pipeline needs the following variables ir order to run successfully:
 
@@ -73,9 +83,21 @@ The pipeline needs the following variables ir order to run successfully:
 
 > The idea comes from https://www.koskila.net/fun-with-azure-devops-nuget-package-versioning/
 
-`PackageVersionType` should be empty or something like -value (hyphen included), more info at https://docs.microsoft.com/en-us/nuget/create-packages/prerelease-packages. Currently, if you don't supply any value and the triggered branch is not `main`, the variable will be set to `-alpha`.
+`PackageVersionType` should be empty or something like `-value` (hyphen included), more info at https://docs.microsoft.com/en-us/nuget/create-packages/prerelease-packages. 
+
+> Currently, if you don't supply any value and the triggered branch is not `main`, the variable will be set to `-alpha`.
 
 You should allow to modify in each pipeline execution (*Let users override this value when running this pipeline*), the values of `Major`, `Minor` and `PackageVersionType` variables to control SEMVER package version manually when required.
+
+![](docs/images/Variables.png)
+
+#### Required extensions
+
+https://marketplace.visualstudio.com/items?itemName=Palmmedia.reportgenerator
+
+#### Permissions
+
+You must assign the Contributor permission on the feed to the special user `<team_project_name> BuildService` in order to publish the package to the feed.
 
 ### GitHub
 
@@ -83,7 +105,7 @@ In case of GitHub, you must supply a secret in `NUGET_PASSWORD` with a valid PAT
 
 This time, the versioning will be done by taking the value from the `.csproj` file.
 
-## Visual Studio
+## Source Link
 
 From a client application, you can debug your package in Visual Studio enabling Source Link support. More info at https://lurumad.github.io/using-source-link-in-net-projects-and-how-to-configure-visual-studio-to-use-it
 
@@ -127,5 +149,7 @@ If instead of Azure DevOps it had been GitHub, the changes would be these:
 ```
 
 Finally, you should see something similar to this in your package, once published.
+
+You can use [NuGet Package Explorer](https://apps.microsoft.com/store/detail/nuget-package-explorer/9WZDNCRDMDM3)
 
 ![](docs/images/Package.png)

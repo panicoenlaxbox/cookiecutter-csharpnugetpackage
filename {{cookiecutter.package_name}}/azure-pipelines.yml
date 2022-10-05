@@ -1,6 +1,10 @@
 variables:
   - name: BuildConfiguration
     value: Release
+  - name: feed_id
+    value: 'YOUR_FEED_ID'
+  - name: environment_name
+    value: 'YOUR_ENVIRONMENT_NAME'
 pool: 
   vmImage: ubuntu-latest
 stages:
@@ -9,7 +13,7 @@ stages:
   - job: Build
     steps:
       - pwsh: |
-          if ($env:PACKAGEVERSIONTYPE -eq '' -and $env:BUILD_SOURCEBRANCHNAME -ne 'main') {
+          if ($env:PACKAGEVERSIONTYPE -eq '' -and ($env:BUILD_SOURCEBRANCHNAME -ne 'main' and $env:BUILD_SOURCEBRANCHNAME -ne 'master')) {
             Write-Host "##vso[task.setvariable variable=PACKAGEVERSIONTYPE]-alpha"
           }
       - task: DotNetCoreCLI@2
@@ -18,14 +22,14 @@ stages:
           command: 'restore'
           projects: '**/*.csproj'
           feedsToUse: 'select'
-          vstsFeed: 'YOUR_PROJECT_FEED_ID'
+          vstsFeed: $(feed_id)
       - task: DotNetCoreCLI@2
         displayName: Test
         inputs:
           command: 'test'
           projects: '**/*.Tests.csproj'
           arguments: '--configuration $(BuildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura'
-      - task: Palmmedia.reportgenerator.reportgenerator-build-release-task.reportgenerator@4
+      - task: reportgenerator@5
         displayName: ReportGenerator
         inputs:
           reports: '**/*.cobertura.xml'
@@ -50,7 +54,7 @@ stages:
   jobs:
   - deployment:
     environment:
-      name: YOUR_ENVIRONMENT_NAME
+      name: $(environment_name)
     strategy:
       runOnce:
         deploy:
@@ -63,4 +67,4 @@ stages:
                 command: 'push'
                 packagesToPush: '$(Pipeline.Workspace)/**/*.nupkg'
                 nuGetFeedType: 'internal'
-                publishVstsFeed: 'YOUR_PROJECT_FEED_ID'
+                publishVstsFeed: $(feed_id)
