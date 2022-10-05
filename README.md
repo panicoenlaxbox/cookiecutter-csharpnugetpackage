@@ -1,8 +1,6 @@
 # Introduction
 
-A [cookiecutter](https://github.com/cookiecutter/cookiecutter) template for a NuGet package published in Azure DevOps.
-
-[Related post](https://www.panicoenlaxbox.com/post/nuget-package-azure-devops/)
+A [cookiecutter](https://github.com/cookiecutter/cookiecutter) template for a NuGet package running CI/CD in Azure DevOps or GitHub and published in an Azure DevOps feed.
 
 # Usage
 
@@ -15,41 +13,32 @@ cookiecutter https://github.com/panicoenlaxbox/cookiecutter-csharpnugetpackage
 
 | Parameter | Description |
 | -------------- | ------------------------------------------------------------ |
-| `package_name` | Package name |
-| `organization_name` | Azure DevOps organization name |
-| `team_project_name` | Azure DevOps team project name |
-| `project_feed_name` | Azure DevOps project feed name |
+| `package_name` | Package name. |
+| `organization_name` | Azure DevOps organization name. |
+| `team_project_name` | Azure DevOps team project name. Optional if you are using an [organization-scoped feed](https://learn.microsoft.com/en-us/azure/devops/artifacts/feeds/project-scoped-feeds). |
+| `feed_name` | Azure DevOps project feed name. |
+| `workflow` | GitHub or Azure DevOps. Indicates where the CI/CD will be executed. |
 
-## nuget.config
+## Code formatting
+A `.editorconfig` file is provided. In addition, a git pre-commit hook is set up to run `dotnet format` on every commit.
 
-`nuget.config` file is just the output of `dotnet new nugetconfig`, so we must add a valid source in order to publish our package.
-
-For this purpose, we can use `dotnet nuget add source` like so:
-
-```bash
-dotnet nuget add source https://pkgs.dev.azure.com/YOUR_ORGANIZATION/YOUR_TEAM_PROJECT/_packaging/YOUR_PROJECT_FEED/nuget/v3/index.json --name WHATEVER_YOU_WANT --username YOUR_USER_NAME --password YOUR_PAT --configfile nuget.config
-```
-
-> PAT is a Personal access token.
-
-At this moment, you will have your source saved in the `nuget.config` file in the project's root folder.
-
-`nuget.config` file is excluded in the git repository.
+In order to ensure [Husky.net](https://alirezanet.github.io/Husky.Net/) is installed, you must perform a couple of steps:
 
 ```bash
-# Nuget personal access tokens and Credentials
-nuget.config
+dotnet tool restore --ignore-failed-sources
+git init
+dotnet husky install
 ```
-
-If you don't want to use this `nuget.config` file, you can remove it and use any other `nuget.config` in the hierarchy, more info at https://docs.microsoft.com/en-us/nuget/consume-packages/configuring-nuget-behavior#config-file-locations-and-uses
 
 ## Testing
+
+Also, via a dotnet tool, you can generate your code coverage.
 
 ```bash
 dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=..\TestResults\Coverage\
 ```
 
-Previous command will generate 'coverage.cobertura.xml' file in the specified folder.
+Previous command will generate `coverage.cobertura.xml` file in the specified folder.
 
 Now, we can run the following command to generate a HTML file with our testing coverage.
 
@@ -64,9 +53,11 @@ dotnet reportgenerator -reports:tests\TestResults\Coverage\**\*.cobertura.xml -t
 [Tt]est[Rr]esult*/
 ```
 
-## Azure DevOps
+## Deploy
 
-You must create, in addition to the team project, a project feed and an environment with manual approval.
+### Azure DevOps
+
+You must create, in addition to the team project, a feed and an environment with manual approval.
 
 With everything ready, you can now create the pipeline using the `azure-pipelines.yml` file, where you will have to select the id of the just created feed and write the right environment name.
 
@@ -86,6 +77,12 @@ The pipeline needs the following variables ir order to run successfully:
 
 You should allow to modify in each pipeline execution (*Let users override this value when running this pipeline*), the values of `Major`, `Minor` and `PackageVersionType` variables to control SEMVER package version manually when required.
 
+### GitHub
+
+In case of GitHub, you must supply a secret in `NUGET_PASSWORD` with a valid PAT.
+
+This time, the versioning will be done by taking the value from the `.csproj` file.
+
 ## Visual Studio
 
 From a client application, you can debug your package in Visual Studio enabling Source Link support. More info at https://lurumad.github.io/using-source-link-in-net-projects-and-how-to-configure-visual-studio-to-use-it
@@ -95,7 +92,7 @@ The following configuration has to be done in Visual Studio.
 - Enable Just My Code (disabled)
 - Enable Source Link support (enabled)
 
-To support source link, you can see that we had to add the following to the `.csproj` file.
+To support source link, the following has been added to the `.csproj` file.
 
 ```xml
 <PropertyGroup>
@@ -109,6 +106,26 @@ To support source link, you can see that we had to add the following to the `.cs
 </PropertyGroup>
 ```
 
-You should see something similar to this in your package, once published.
+```xml
+<PackageReference Include="Microsoft.SourceLink.AzureRepos.Git" Version="1.1.1">
+	<PrivateAssets>all</PrivateAssets>
+	<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+</PackageReference>
+```
+
+If instead of Azure DevOps it had been GitHub, the changes would be these:
+
+```xml
+<ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">True</ContinuousIntegrationBuild>
+```
+
+```xml
+<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
+	<PrivateAssets>all</PrivateAssets>
+	<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+</PackageReference>
+```
+
+Finally, you should see something similar to this in your package, once published.
 
 ![](docs/images/Package.png)

@@ -1,6 +1,7 @@
 {
     "package_name": null,
     "organization_name": null,
-    "team_project_name": null,
-    "project_feed_name": null
+    "team_project_name": "",
+    "feed_name": null,
+    "workflow": ["github", "azuredevops"]
 }

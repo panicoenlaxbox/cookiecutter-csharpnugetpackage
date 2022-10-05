@@ -8,14 +8,22 @@
 		<DebugType>embedded</DebugType>
 		<DebugSymbols>true</DebugSymbols>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		{%- if cookiecutter.workflow == 'github' %}
+		<ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">True</ContinuousIntegrationBuild>		
+		{%- else %}
 		<ContinuousIntegrationBuild Condition="'$(TF_BUILD)' == 'true'">True</ContinuousIntegrationBuild>
+		{%- endif %}
 		<Deterministic>true</Deterministic>
 		<EmbedUntrackedSources>true</EmbedUntrackedSources>
 		<Version>1.0.0</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
+		{%- if cookiecutter.workflow == 'github' %}
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
+		{%- else %}
 		<PackageReference Include="Microsoft.SourceLink.AzureRepos.Git" Version="1.1.1">
+		{%- endif %}
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
