@@ -26,8 +26,8 @@ jobs:
         dotnet-version: 6.0.x
     - name: NuGet source
       run: |
-        dotnet nuget remove source {{cookiecutter.organization_name}}
-        dotnet nuget add source "{{cookiecutter.organization_name}}" value="https://pkgs.dev.azure.com/{{cookiecutter.organization_name}}/{{ cookiecutter.team_project_name + '/' if cookiecutter.team_project_name != '' else '' }}_packaging/{{cookiecutter.feed_name}}/nuget/v3/index.json" --name {{cookiecutter.organization_name}} --username "n/a" --password "$env:NUGET_PASSWORD" --store-password-in-clear-text
+        dotnet nuget remove source {{cookiecutter.feed_name}}
+        dotnet nuget add source https://pkgs.dev.azure.com/{{cookiecutter.organization_name}}/{{ cookiecutter.team_project_name + '/' if cookiecutter.team_project_name != '' else '' }}_packaging/{{cookiecutter.feed_name}}/nuget/v3/index.json --name "{{cookiecutter.feed_name}}" --username "n/a" --password "$env:NUGET_PASSWORD" --store-password-in-clear-text
       shell: pwsh
       env:
       {%- raw %}

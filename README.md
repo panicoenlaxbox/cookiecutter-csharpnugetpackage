@@ -95,10 +95,6 @@ You should allow to modify in each pipeline execution (*Let users override this 
 
 https://marketplace.visualstudio.com/items?itemName=Palmmedia.reportgenerator
 
-#### Permissions
-
-You must assign the Contributor permission on the feed to the special user `<team_project_name> BuildService` in order to publish the package to the feed.
-
 ### GitHub
 
 In case of GitHub, you must supply a secret in `NUGET_PASSWORD` with a valid PAT.
