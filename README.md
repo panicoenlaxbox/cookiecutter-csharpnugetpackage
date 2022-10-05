@@ -138,7 +138,7 @@ If instead of Azure DevOps it had been GitHub, the changes would be these:
 ```
 
 ```xml
-<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
+<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
 	<PrivateAssets>all</PrivateAssets>
 	<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 </PackageReference>
