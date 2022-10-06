@@ -57,7 +57,7 @@ dotnet reportgenerator -reports:tests\TestResults\Coverage\**\*.cobertura.xml -t
 
 ### Azure DevOps
 
-You must create, in addition to the team project, a feed and an environment with resource of type None and with manual approval.
+You must create, in addition to the team project, a feed and an environment. Normally, you'll want to include manual approval, but it's not required.
 
 ![](docs/images/Approvals.png)
 
