@@ -91,6 +91,8 @@ You should allow to modify in each pipeline execution (*Let users override this 
 
 ![](docs/images/Variables.png)
 
+If you prefer to use a more simple approach, you can use the same strategy that it's used when you choose [GitHub](#github).
+
 #### Required extensions
 
 https://marketplace.visualstudio.com/items?itemName=Palmmedia.reportgenerator
@@ -99,7 +101,7 @@ https://marketplace.visualstudio.com/items?itemName=Palmmedia.reportgenerator
 
 In case of GitHub, you must supply a secret in `NUGET_PASSWORD` with a valid PAT.
 
-This time, the versioning will be done by taking the value from the `.csproj` file.
+This time, the versioning will be done by [taking the value](https://github.com/panicoenlaxbox/cookiecutter-csharpnugetpackage/blob/240dadd47614df35ce514fa88ffcc9dc50c30a76/%7B%7Bcookiecutter.package_name%7D%7D/.github/workflows/ci-cd.yaml#L50) from the `.csproj` file.
 
 ## Source Link
 
