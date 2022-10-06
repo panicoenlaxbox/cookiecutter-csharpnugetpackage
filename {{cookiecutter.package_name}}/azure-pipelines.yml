@@ -23,6 +23,8 @@ stages:
           projects: '**/*.csproj'
           feedsToUse: 'select'
           vstsFeed: $(feed_id)
+      - pwsh: |
+          dotnet format --verify-no-changes --no-restore          
       - task: DotNetCoreCLI@2
         displayName: Test
         inputs:
