@@ -30,9 +30,15 @@ git init
 dotnet husky install
 ```
 
-Husky will be executed when you run a `git commit`. Also, you can execute Husky manually with some of the preconfigured tasks present in `task-runner.json`.
+Husky will be executed when you run a `git commit`. Also, you can execute Husky manually with some of the preconfigured tasks present in the file `task-runner.json`.
 
-You can skip (although it's not recommended) with `git commit -m"YOUR MESSAGE" --no-verify`.
+You can skip (although it's not recommended) with the option `--no-verify` in `git commit`.
+
+### Related links
+
+- https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-format
+- https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/overview
+- https://www.jetbrains.com/help/rider/Using_EditorConfig.html#roslyn
 
 ## Testing
 
