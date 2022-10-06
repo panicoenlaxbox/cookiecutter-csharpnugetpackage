@@ -30,6 +30,10 @@ git init
 dotnet husky install
 ```
 
+Husky will be executed when you run a `git commit`. Also, you can execute Husky manually with some of the preconfigured tasks present in `task-runner.json`.
+
+You can skip (although it's not recommended) with `git commit -m"YOUR MESSAGE" --no-verify`.
+
 ## Testing
 
 Also, via a dotnet tool, you can generate your code coverage.
